@@ -1,0 +1,17 @@
+.logo {
+    display: flex;
+    justify-content: space-between;
+    max-width: 158px;
+    margin: 16px;
+}
+
+.picture {
+    font-family: Roboto, sans-serif;
+    align-self: center;
+    color: #fff;
+    margin: 0;
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+    font-weight: bold;
+}
