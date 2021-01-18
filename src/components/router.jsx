@@ -1,18 +1,23 @@
-import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
-import AuthPage from "../pages/Auth";
-import TimeTable from "../pages/TimeTable";
+import React, { useContext } from 'react';
+import TimeTable from '../pages/TimeTable';
+import AuthContext from '../contexts/auth.context';
+import { Switch, Route, useHistory } from 'react-router-dom';
 
 const Router = () => {
+    const { isLogged } = useContext(AuthContext);
+
+    const history = useHistory();
+    if (!isLogged) {
+        history.push('/login');
+    }
     return (
-        <Switch>
-            <Route exact path='/'>
-                <AuthPage/>
-            </Route>
-            <Route exact path="/timetable">
-                <TimeTable/>
-            </Route>
-        </Switch>
+        <>
+            <Switch>
+                <Route exact path="/timetable">
+                    <TimeTable/>
+                </Route>
+            </Switch>
+        </>
     );
 };
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout } from "antd";
-import styles from "./styles.css";
+import styles from "./styles.module.css";
 
 const Footer = () => {
     return <Layout.Footer className={ styles.footerText }>

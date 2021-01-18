@@ -1,6 +1,6 @@
 import React from "react";
-import logo from "../logo.svg";
-import styles from "./styles.css";
+import logo from "../images/logo.svg";
+import styles from "./styles.module.css";
 import { Button, Layout } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 

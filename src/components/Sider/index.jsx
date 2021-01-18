@@ -1,6 +1,6 @@
 import React from "react";
-import logo from "../logo.svg";
-import styles from "./styles.css";
+import logo from "../images/logo.svg";
+import styles from "./styles.module.css";
 import { Layout, Menu } from "antd";
 import { NotificationOutlined, ScheduleOutlined, TeamOutlined } from "@ant-design/icons";
 
