@@ -56,7 +56,7 @@ const LoginPage = () => {
                     <Button type="primary" htmlType="submit" className={styles.loginBtn}>
                         Увійти
                     </Button>
-                    Або <a href="/register">зареэструватись!</a>
+                    Або <a href="/register">зареєструватись!</a>
                 </Form.Item>
             </Form>
         </Card>

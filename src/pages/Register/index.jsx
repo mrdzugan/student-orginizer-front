@@ -15,7 +15,7 @@ const RegisterPage = () => {
             <Form
                 name="register"
                 initialValues={ {
-                    remember: true,
+                    isHeadman: true,
                 } }
                 onFinish={ onFinish }
             >
@@ -78,6 +78,10 @@ const RegisterPage = () => {
                     name="email"
                     rules={ [
                         {
+                            type: 'email',
+                            message: 'Ви ввели некоректний E-mail!',
+                        },
+                        {
                             required: true,
                             message: 'Будь ласка, введіть свій Email!',
                         },
@@ -91,15 +95,34 @@ const RegisterPage = () => {
                     rules={ [
                         {
                             required: true,
-                            message: 'Будь ласка, введіть свій пароль!',
+                            message: 'Будь ласка, введіть майбутній пароль!',
                         },
                     ] }
                 >
-                    <Input
-                        type="password"
-                        placeholder="Пароль"
-                    />
+                    <Input.Password placeholder="Пароль"/>
                 </Form.Item>
+
+                <Form.Item
+                    name="confirm"
+                    dependencies={ ['password'] }
+                    hasFeedback
+                    rules={ [
+                        {
+                            required: true,
+                            message: 'Будь ласка, підтвердіть введений пароль!',
+                        },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || getFieldValue('password') === value) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject('Паролі не співпадають!');
+                            },
+                        }),
+                    ] }>
+                    <Input.Password placeholder="Підтвердження паролю"/>
+                </Form.Item>
+
                 <Form.Item>
                     <Form.Item name="remember" valuePropName="checked" noStyle>
                         <Checkbox>Я староста</Checkbox>
@@ -108,7 +131,7 @@ const RegisterPage = () => {
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit" className={ styles.registerBtn }>
-                        Увійти
+                        Зареєструватись
                     </Button>
                     Або <a href="/login">увійти!</a>
                 </Form.Item>

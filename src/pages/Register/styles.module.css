@@ -18,6 +18,10 @@
     background: rgba(255, 255, 255, 0.90) !important;
 }
 
+.registerCardContainer > Form {
+    max-height: 300px;
+}
+
 .registerBtn {
     width: 100%;
     margin-bottom: 5px;
