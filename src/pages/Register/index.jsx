@@ -1,13 +1,21 @@
 import React from 'react';
 import styles from './styles.module.css';
 import { Card, Form, Input, Checkbox, Button, Select } from 'antd';
+import authService from '../../services/auth.service';
 
 const { Option } = Select;
 
 const RegisterPage = () => {
 
     const onFinish = (values) => {
-        console.log('Success:', values);
+        if (values.isHeadman) {
+            values.roles = ['headman'];
+        }
+        authService.register(values).then((response) => {
+            console.log(response);
+        }).catch((error) => {
+            console.error(error);
+        });
     };
 
     return <div className={ styles.background }>
@@ -15,7 +23,7 @@ const RegisterPage = () => {
             <Form
                 name="register"
                 initialValues={ {
-                    isHeadman: true,
+                    isHeadman: false,
                 } }
                 onFinish={ onFinish }
             >
@@ -124,7 +132,7 @@ const RegisterPage = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Form.Item name="remember" valuePropName="checked" noStyle>
+                    <Form.Item name="isHeadman" valuePropName="checked" noStyle>
                         <Checkbox>Я староста</Checkbox>
                     </Form.Item>
                 </Form.Item>
