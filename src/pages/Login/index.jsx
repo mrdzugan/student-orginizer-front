@@ -3,7 +3,7 @@ import styles from './styles.module.css';
 import { Card, Form, Input, Checkbox, Button, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import authService from '../../services/auth.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
 const LoginPage = () => {
 
@@ -25,8 +25,12 @@ const LoginPage = () => {
                 setLoginError('Виникла помилка, спробуйте пізніше');
             }
         }).catch((error) => {
-            const { message } = error.response.data;
-            setLoginError(message);
+            if(error.response) {
+                const { message } = error.response.data;
+                setLoginError(message);
+                return;
+            }
+            setLoginError('Виникла помилка, спробуйте пізніше');
         });
     };
 
@@ -76,7 +80,7 @@ const LoginPage = () => {
                     <Button type="primary" htmlType="submit" className={styles.loginBtn}>
                         Увійти
                     </Button>
-                    Або <a href="/register">зареєструватись!</a>
+                    Або <Link to="/register">зареєструватись!</Link>
                 </Form.Item>
             </Form>
         </Card>

@@ -3,7 +3,7 @@ import styles from './styles.module.css';
 import { Card, Form, Input, Checkbox, Button, Select, notification } from 'antd';
 import authService from '../../services/auth.service';
 import facultyService from '../../services/faculty.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -87,7 +87,7 @@ const RegisterPage = () => {
                     ]}
                 >
                     <Select placeholder="Факультет">
-                        {facultyList.map(faculty => <Option key={faculty.name} value={faculty}>{faculty.name}</Option>)}
+                        {facultyList.map(faculty => <Option key={faculty.name} value={faculty._id}>{faculty.name}</Option>)}
                     </Select>
                 </Form.Item>
 
@@ -166,7 +166,7 @@ const RegisterPage = () => {
                     <Button type="primary" htmlType="submit" className={styles.registerBtn}>
                         Зареєструватись
                     </Button>
-                    Або <a href="/login">увійти!</a>
+                    Або <Link to="/login">увійти!</Link>
                 </Form.Item>
             </Form>
         </Card>
