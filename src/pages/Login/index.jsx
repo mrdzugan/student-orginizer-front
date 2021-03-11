@@ -1,18 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './styles.module.css';
-import { Card, Form, Input, Checkbox, Button } from 'antd';
+import { Card, Form, Input, Checkbox, Button, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-
-
+import authService from '../../services/auth.service';
+import { useHistory } from 'react-router-dom';
 
 const LoginPage = () => {
 
+    const history = useHistory();
+
+    const [loginError, setLoginError] = useState('');
+
     const onFinish = (values) => {
-        console.log('Success:', values);
+        authService.login(values.email, values.password).then(response => {
+            if (response.data.user.accessToken) {
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                history.push('/');
+                const { name, surname } = response.data.user;
+                notification.success({
+                    message: 'Успішна авторизація!',
+                    description: `Вітаємо Вас, ${name} ${surname}. Бажаємо приємного користування нашою платформою :)`,
+                });
+            } else {
+                setLoginError('Виникла помилка, спробуйте пізніше');
+            }
+        }).catch((error) => {
+            const { message } = error.response.data;
+            setLoginError(message);
+        });
     };
 
-    return <div className={ styles.background }>
-        <Card title="Авторизація" bordered={ false } className={styles.loginCardContainer}>
+    return <div className={styles.background}>
+        <Card title="Авторизація" bordered={false} className={styles.loginCardContainer}>
             <Form
                 name="login"
                 initialValues={{
@@ -29,7 +48,7 @@ const LoginPage = () => {
                         },
                     ]}
                 >
-                    <Input prefix={<UserOutlined />} placeholder="Email" />
+                    <Input prefix={<UserOutlined/>} placeholder="Email"/>
                 </Form.Item>
                 <Form.Item
                     name="password"
@@ -41,11 +60,12 @@ const LoginPage = () => {
                     ]}
                 >
                     <Input
-                        prefix={<LockOutlined />}
+                        prefix={<LockOutlined/>}
                         type="password"
                         placeholder="Пароль"
                     />
                 </Form.Item>
+                {loginError && <p className={styles.loginErrorMessage}>{loginError}</p>}
                 <Form.Item>
                     <Form.Item name="remember" valuePropName="checked" noStyle>
                         <Checkbox>Запам'ятати мене</Checkbox>
@@ -60,7 +80,7 @@ const LoginPage = () => {
                 </Form.Item>
             </Form>
         </Card>
-    </div>
-}
+    </div>;
+};
 
 export default LoginPage;

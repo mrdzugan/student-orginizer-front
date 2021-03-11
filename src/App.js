@@ -1,46 +1,28 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import './App.css';
-import { Layout } from 'antd';
-import Router from './components/router';
-import Header from './components/Header';
-import Sider from './components/Sider';
-import Footer from './components/Footer';
-import AuthContext from './contexts/auth.context';
+import AppLayout from './components/AppLayout';
 import { Route, Switch } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
-
-const { Content } = Layout;
+import PrivateRoute from './helpers/PrivateRoute';
+import TimeTable from './pages/TimeTable';
+import MyGroup from './pages/MyGroup';
 
 const App = () => {
-    const [isCollapsed, setIsCollapsed] = useState(false);
 
-    const authValue = useContext(AuthContext);
-
-    const AuthProvider = AuthContext.Provider;
-
-    return <AuthProvider value={ authValue }>
-        <Switch>
-            <Route exact path='/login'>
-                <LoginPage/>
-            </Route>
-            <Route exact path='/register'>
-                <RegisterPage/>
-            </Route>
-            <Route path='/'>
-                <Layout className='layout-container'>
-                    <Sider setIsCollapsed={ setIsCollapsed }/>
-                    <Layout>
-                        <Header isCollapsed={ isCollapsed }/>
-                        <Content style={ { margin: '24px 16px 0' } }>
-                            <Router/>
-                        </Content>
-                        <Footer/>
-                    </Layout>
-                </Layout>
-            </Route>
-        </Switch>
-    </AuthProvider>;
+    return <Switch>
+        <Route exact path='/login'>
+            <LoginPage/>
+        </Route>
+        <Route exact path='/register'>
+            <RegisterPage/>
+        </Route>
+        <PrivateRoute exact path='/' component={() => <AppLayout>
+            <h1>Main page</h1>
+        </AppLayout>}/>
+        <PrivateRoute exact path="/timetable" component={TimeTable}/>
+        <PrivateRoute exact path="/mygroup" component={MyGroup}/>
+    </Switch>;
 };
 
 

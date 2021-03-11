@@ -1,18 +1,19 @@
-import React from "react";
-import { Table, Tag } from "antd";
-import { columns, dataSource } from "./mocks";
+import React from 'react';
+import { Table, Tag } from 'antd';
+import { columns, dataSource } from './mocks';
+import AppLayout from '../../components/AppLayout';
 
 const TimeTable = () => {
-    return <div className="site-layout-background" style={ { padding: 24, minHeight: 360 } }>
-        <Tag style={ { marginBottom: 5 } } color="blue">Чисельник</Tag>
+    return <AppLayout>
+        <Tag style={{ marginBottom: 5 }} color="blue">Чисельник</Tag>
         <Table
-            columns={ columns }
-            pagination={ false }
+            columns={columns}
+            pagination={false}
             bordered size="small"
-            scroll={ { x: true } }
-            dataSource={ dataSource }
+            scroll={{ x: true }}
+            dataSource={dataSource}
         />
-    </div>;
+    </AppLayout>;
 };
 
 export default TimeTable;
