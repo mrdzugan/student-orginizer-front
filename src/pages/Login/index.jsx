@@ -4,6 +4,7 @@ import { Card, Form, Input, Checkbox, Button, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import authService from '../../services/auth.service';
 import { useHistory, Link } from 'react-router-dom';
+import facultyService from "../../services/faculty.service";
 
 const LoginPage = () => {
 
@@ -12,20 +13,27 @@ const LoginPage = () => {
     const [loginError, setLoginError] = useState('');
 
     const onFinish = (values) => {
-        authService.login(values.email, values.password).then(response => {
+        authService.login(values.email, values.password).then(async response => {
             if (response.data.user.accessToken) {
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+                const userInfo = {
+                    ...response.data.user,
+                    facultyId: response.data.user.faculty,
+                }
+                localStorage.setItem('user', JSON.stringify(userInfo));
+                const { data: userFaculty } = await facultyService.getFaculty(userInfo.facultyId);
+                userInfo.faculty = userFaculty;
+                localStorage.setItem('user', JSON.stringify(userInfo));
                 history.push('/');
                 const { name, surname } = response.data.user;
                 notification.success({
                     message: 'Успішна авторизація!',
-                    description: `Вітаємо Вас, ${name} ${surname}. Бажаємо приємного користування нашою платформою :)`,
+                    description: `Вітаємо Вас, ${ name } ${ surname }. Бажаємо приємного користування нашою платформою :)`,
                 });
             } else {
                 setLoginError('Виникла помилка, спробуйте пізніше');
             }
         }).catch((error) => {
-            if(error.response) {
+            if (error.response) {
                 const { message } = error.response.data;
                 setLoginError(message);
                 return;
@@ -34,42 +42,42 @@ const LoginPage = () => {
         });
     };
 
-    return <div className={styles.background}>
-        <Card title="Авторизація" bordered={false} className={styles.loginCardContainer}>
+    return <div className={ styles.background }>
+        <Card title="Авторизація" bordered={ false } className={ styles.loginCardContainer }>
             <Form
                 name="login"
-                initialValues={{
+                initialValues={ {
                     remember: true,
-                }}
-                onFinish={onFinish}
+                } }
+                onFinish={ onFinish }
             >
                 <Form.Item
                     name="email"
-                    rules={[
+                    rules={ [
                         {
                             required: true,
                             message: 'Будь ласка, введіть свій Email!',
                         },
-                    ]}
+                    ] }
                 >
-                    <Input prefix={<UserOutlined/>} placeholder="Email"/>
+                    <Input prefix={ <UserOutlined/> } placeholder="Email"/>
                 </Form.Item>
                 <Form.Item
                     name="password"
-                    rules={[
+                    rules={ [
                         {
                             required: true,
                             message: 'Будь ласка, введіть свій пароль!',
                         },
-                    ]}
+                    ] }
                 >
                     <Input
-                        prefix={<LockOutlined/>}
+                        prefix={ <LockOutlined/> }
                         type="password"
                         placeholder="Пароль"
                     />
                 </Form.Item>
-                {loginError && <p className={styles.loginErrorMessage}>{loginError}</p>}
+                { loginError && <p className={ styles.loginErrorMessage }>{ loginError }</p> }
                 <Form.Item>
                     <Form.Item name="remember" valuePropName="checked" noStyle>
                         <Checkbox>Запам'ятати мене</Checkbox>
@@ -77,7 +85,7 @@ const LoginPage = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" className={styles.loginBtn}>
+                    <Button type="primary" htmlType="submit" className={ styles.loginBtn }>
                         Увійти
                     </Button>
                     Або <Link to="/register">зареєструватись!</Link>

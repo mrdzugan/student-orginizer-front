@@ -27,7 +27,12 @@ const RegisterPage = () => {
         }
         authService.register(values).then((response) => {
             if (response.data.user.accessToken) {
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+                const userInfo = {
+                    ...response.data.user,
+                    facultyId: response.data.user.faculty,
+                    faculty: facultyList.find(faculty => faculty._id === values.faculty._id),
+                }
+                localStorage.setItem('user', JSON.stringify(userInfo));
                 history.push('/');
                 const { name, surname } = response.data.user;
                 notification.success({
@@ -87,7 +92,7 @@ const RegisterPage = () => {
                     ]}
                 >
                     <Select placeholder="Факультет">
-                        {facultyList.map(faculty => <Option key={faculty.name} value={faculty._id}>{faculty.name}</Option>)}
+                        {facultyList.map(faculty => <Option key={faculty.fullName} value={faculty._id}>{faculty.fullName}</Option>)}
                     </Select>
                 </Form.Item>
 
