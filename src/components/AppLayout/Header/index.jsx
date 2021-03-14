@@ -5,6 +5,19 @@ import { Button, Layout } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import authService from '../../../services/auth.service';
 
+const getUserRole = (roles) => {
+    if(roles.includes('ROLE_CURATOR')) {
+        return 'Куратор';
+    }
+    if(roles.includes('ROLE_HEADMAN')) {
+        return 'Староста';
+    }
+    if(roles.includes('ROLE_STUDENT')) {
+        return 'Студент(ка)';
+    }
+    return 'Не визначено';
+}
+
 const Header = (props) => {
     const { isCollapsed } = props;
 
@@ -22,7 +35,7 @@ const Header = (props) => {
             <UserOutlined/>
             <div className={ styles.userInfo }>
                 <span>{ userInfo.name } { userInfo.surname }</span>
-                <span>{ userInfo.faculty?.abbreviation }-127 Студент</span>
+                <span>{ userInfo.faculty?.abbreviation }-{ userInfo.group } { getUserRole(userInfo.roles) }</span>
             </div>
             <Button size='small' ghost onClick={ () => authService.logout() }>Logout</Button>
         </div>

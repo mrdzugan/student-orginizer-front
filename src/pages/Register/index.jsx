@@ -12,6 +12,7 @@ const RegisterPage = () => {
     const history = useHistory();
     const [registerError, setRegisterError] = useState('');
     const [facultyList, setFacultyList] = useState([]);
+    const [formValues, setFormValues] = useState({});
 
     useEffect(() => {
         const getFaculties = async () => {
@@ -30,90 +31,97 @@ const RegisterPage = () => {
                 const userInfo = {
                     ...response.data.user,
                     facultyId: response.data.user.faculty,
-                    faculty: facultyList.find(faculty => faculty._id === values.faculty._id),
+                    faculty: facultyList.find(faculty => faculty._id === values.faculty),
                 }
                 localStorage.setItem('user', JSON.stringify(userInfo));
                 history.push('/');
                 const { name, surname } = response.data.user;
                 notification.success({
                     message: 'Успішна реєстрація!',
-                    description: `Вітаємо Вас, ${name} ${surname}. Бажаємо приємного користування нашою платформою :)`,
+                    description: `Вітаємо Вас, ${ name } ${ surname }. Бажаємо приємного користування нашою платформою :)`,
                 });
             } else {
                 setRegisterError('Виникла помилка, спробуйте пізніше');
             }
         }).catch((error) => {
-            const { message } = error.response.data;
-            setRegisterError(message);
+            const { message } = error.response?.data || {};
+            setRegisterError(message || error);
         });
     };
 
-    return <div className={styles.background}>
-        <Card title="Реєстрація" bordered={false} className={styles.registerCardContainer}>
+    return <div className={ styles.background }>
+        <Card title="Реєстрація" bordered={ false } className={ styles.registerCardContainer }>
             <Form
                 name="register"
-                initialValues={{
+                initialValues={ {
                     isHeadman: false,
-                }}
-                onFinish={onFinish}
+                } }
+                onValuesChange={ (values) => setFormValues(values) }
+                onFinish={ onFinish }
             >
 
                 <Form.Item
                     name="name"
-                    rules={[
+                    rules={ [
                         {
                             required: true,
                             message: 'Будь ласка, введіть своє ім\'я!',
                         },
-                    ]}
+                    ] }
                 >
                     <Input placeholder="Ім'я"/>
                 </Form.Item>
 
                 <Form.Item
                     name="surname"
-                    rules={[
+                    rules={ [
                         {
                             required: true,
                             message: 'Будь ласка, введіть своє прізвище!',
                         },
-                    ]}
+                    ] }
                 >
                     <Input placeholder="Прізвище"/>
                 </Form.Item>
 
                 <Form.Item
                     name="faculty"
-                    rules={[
+                    rules={ [
                         {
                             required: true,
                             message: 'Будь ласка, виберіть факультет!',
                         },
-                    ]}
+                    ] }
                 >
                     <Select placeholder="Факультет">
-                        {facultyList.map(faculty => <Option key={faculty.fullName} value={faculty._id}>{faculty.fullName}</Option>)}
+                        { facultyList.map(faculty => <Option key={ faculty.fullName }
+                                                             value={ faculty._id }>{ faculty.fullName }</Option>) }
                     </Select>
                 </Form.Item>
 
                 <Form.Item
                     name="group"
-                    rules={[
+                    rules={ [
                         {
                             required: true,
                             message: 'Будь ласка, виберіть групу!',
                         },
-                    ]}
+                    ] }
                 >
                     <Select placeholder="Група">
-                        <Option value="117">117</Option>
-                        <Option value="127">127</Option>
+                        <Option value="noGroup">У списку немає моєї групи</Option>
+                        { formValues.faculty &&
+                        facultyList.find(faculty => {
+                            return faculty._id === formValues.faculty
+                        })
+                            .groups.map(group => <Option key={ group.number }
+                                                         value={ group.number }>{ group.number }</Option>) }
                     </Select>
                 </Form.Item>
 
                 <Form.Item
                     name="email"
-                    rules={[
+                    rules={ [
                         {
                             type: 'email',
                             message: 'Ви ввели некоректний E-mail!',
@@ -122,28 +130,28 @@ const RegisterPage = () => {
                             required: true,
                             message: 'Будь ласка, введіть свій Email!',
                         },
-                    ]}
+                    ] }
                 >
                     <Input placeholder="Email"/>
                 </Form.Item>
 
                 <Form.Item
                     name="password"
-                    rules={[
+                    rules={ [
                         {
                             required: true,
                             message: 'Будь ласка, введіть майбутній пароль!',
                         },
-                    ]}
+                    ] }
                 >
                     <Input.Password placeholder="Пароль"/>
                 </Form.Item>
 
                 <Form.Item
                     name="confirm"
-                    dependencies={['password']}
+                    dependencies={ ['password'] }
                     hasFeedback
-                    rules={[
+                    rules={ [
                         {
                             required: true,
                             message: 'Будь ласка, підтвердіть введений пароль!',
@@ -156,7 +164,7 @@ const RegisterPage = () => {
                                 return Promise.reject('Паролі не співпадають!');
                             },
                         }),
-                    ]}>
+                    ] }>
                     <Input.Password placeholder="Підтвердження паролю"/>
                 </Form.Item>
 
@@ -165,10 +173,10 @@ const RegisterPage = () => {
                         <Checkbox>Я староста</Checkbox>
                     </Form.Item>
                 </Form.Item>
-                {registerError && <p className={styles.registerErrorMessage}>{registerError}</p>}
+                { registerError && <p className={ styles.registerErrorMessage }>{ registerError }</p> }
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" className={styles.registerBtn}>
+                    <Button type="primary" htmlType="submit" className={ styles.registerBtn }>
                         Зареєструватись
                     </Button>
                     Або <Link to="/login">увійти!</Link>
