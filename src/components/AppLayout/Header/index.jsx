@@ -6,22 +6,33 @@ import { UserOutlined } from '@ant-design/icons';
 import authService from '../../../services/auth.service';
 
 const getUserRole = (roles) => {
-    if(roles.includes('ROLE_CURATOR')) {
+    if (roles.includes('ROLE_CURATOR')) {
         return 'Куратор';
     }
-    if(roles.includes('ROLE_HEADMAN')) {
+    if (roles.includes('ROLE_HEADMAN')) {
         return 'Староста';
     }
-    if(roles.includes('ROLE_STUDENT')) {
+    if (roles.includes('ROLE_STUDENT')) {
         return 'Студент(ка)';
     }
     return 'Не визначено';
-}
+};
 
 const Header = (props) => {
     const { isCollapsed } = props;
 
     const userInfo = JSON.parse(localStorage.getItem('user'));
+
+    const renderCreateGroupButton = () =>
+        <Button
+            size="small"
+            shape="round"
+            type="primary"
+            className={ styles.createGroupButton }
+        >Створити групу</Button>;
+    const groupInfo = userInfo.group !== 'noGroup'
+        ? `${ userInfo.faculty?.abbreviation }-${ userInfo.group } ${ getUserRole(userInfo.roles) }`
+        : renderCreateGroupButton();
 
     return <Layout.Header
         className={ styles.headerContainer }
@@ -33,9 +44,12 @@ const Header = (props) => {
         </div> }
         <div className={ styles.userInfoContainer }>
             <UserOutlined/>
-            <div className={ styles.userInfo }>
+            <div
+                className={ styles.userInfo }
+                style={ { height: userInfo.group !== 'noGroup' ? '26px' : '36px' } }
+            >
                 <span>{ userInfo.name } { userInfo.surname }</span>
-                <span>{ userInfo.faculty?.abbreviation }-{ userInfo.group } { getUserRole(userInfo.roles) }</span>
+                <div>{ groupInfo }</div>
             </div>
             <Button size='small' ghost onClick={ () => authService.logout() }>Logout</Button>
         </div>

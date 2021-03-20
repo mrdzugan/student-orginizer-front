@@ -6,6 +6,7 @@ import facultyService from '../../services/faculty.service';
 import { useHistory, Link } from 'react-router-dom';
 
 const { Option } = Select;
+const { useForm } = Form;
 
 const RegisterPage = () => {
 
@@ -13,14 +14,27 @@ const RegisterPage = () => {
     const [registerError, setRegisterError] = useState('');
     const [facultyList, setFacultyList] = useState([]);
     const [formValues, setFormValues] = useState({});
+    const [form] = useForm();
 
     useEffect(() => {
         const getFaculties = async () => {
             const response = await facultyService.getFaculties();
             setFacultyList(response.data);
+            console.log(response.data);
         };
         getFaculties();
     }, []);
+
+    const onValuesChangeHandle = (values) => {
+        setFormValues(prevValues => {
+            if (values.faculty && prevValues.faculty !== values.faculty) {
+                delete values.group;
+                form.setFieldsValue({group: undefined});
+                console.log(form.getFieldsValue());
+            }
+            return ({ ...prevValues, ...values });
+        });
+    }
 
     const onFinish = (values) => {
         if (values.isHeadman) {
@@ -32,7 +46,7 @@ const RegisterPage = () => {
                     ...response.data.user,
                     facultyId: response.data.user.faculty,
                     faculty: facultyList.find(faculty => faculty._id === values.faculty),
-                }
+                };
                 localStorage.setItem('user', JSON.stringify(userInfo));
                 history.push('/');
                 const { name, surname } = response.data.user;
@@ -56,7 +70,8 @@ const RegisterPage = () => {
                 initialValues={ {
                     isHeadman: false,
                 } }
-                onValuesChange={ (values) => setFormValues(values) }
+                form={ form }
+                onValuesChange={ onValuesChangeHandle }
                 onFinish={ onFinish }
             >
 
@@ -112,10 +127,10 @@ const RegisterPage = () => {
                         <Option value="noGroup">У списку немає моєї групи</Option>
                         { formValues.faculty &&
                         facultyList.find(faculty => {
-                            return faculty._id === formValues.faculty
-                        })
-                            .groups.map(group => <Option key={ group.number }
-                                                         value={ group.number }>{ group.number }</Option>) }
+                            console.log(formValues);
+                            return faculty._id === formValues.faculty;
+                        }).groups.map(group => <Option key={ group.name }
+                                                       value={ group.name }>{ group.name }</Option>) }
                     </Select>
                 </Form.Item>
 

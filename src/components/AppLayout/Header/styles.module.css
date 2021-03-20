@@ -33,7 +33,18 @@
 .userInfo {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
     font-size: 10px;
     line-height: 12px;
+    height: 26px;
+}
+
+.createGroupButton {
+    width: 75px;
+    height: 20px !important;
+    padding: 2px !important;
+    font-size: 9px !important;
+    line-height: 12px !important;
 }
