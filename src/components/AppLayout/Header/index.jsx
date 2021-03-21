@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import logo from '../../images/logo.svg';
 import styles from './styles.module.css';
-import { Button, Layout } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
-import authService from '../../../services/auth.service';
+import { Button, Layout, Spin } from 'antd';
 import CreateGroupModal from '../../CreateGroupModal';
-import AuthService from '../../../services/auth.service';
+import AuthContext from '../../../contexts/auth.context';
+import { UserOutlined, LoadingOutlined } from '@ant-design/icons';
 
 const getUserRole = (roles) => {
     if (roles.includes('ROLE_CURATOR')) {
@@ -23,8 +22,9 @@ const getUserRole = (roles) => {
 const Header = (props) => {
     const { isCollapsed } = props;
 
+    const { userInfo, logout } = useContext(AuthContext);
+
     const [isCreateGroupModalVisible, setIsCreateGroupModalVisible] = useState(false);
-    const userInfo = AuthService.getCurrentUser();
 
     const renderCreateGroupButton = () =>
         <Button
@@ -51,12 +51,14 @@ const Header = (props) => {
             <UserOutlined/>
             <div
                 className={ styles.userInfo }
-                style={ { height: userInfo.group !== 'noGroup' ? '26px' : '36px' } }
+                style={ { height: userInfo.group ? '26px' : '36px' } }
             >
-                <span>{ userInfo.name } { userInfo.surname }</span>
-                <div>{ groupInfo }</div>
+                { !userInfo.userLoading ? <>
+                    <span>{ userInfo.name } { userInfo.surname }</span>
+                    <div>{ groupInfo }</div>
+                </> : <Spin indicator={ <LoadingOutlined style={ { fontSize: 28 } } spin/> }/> }
             </div>
-            <Button size='small' ghost onClick={ () => authService.logout() }>Logout</Button>
+            <Button size='small' ghost onClick={ logout }>Logout</Button>
         </div>
         <CreateGroupModal
             visible={ isCreateGroupModalVisible }

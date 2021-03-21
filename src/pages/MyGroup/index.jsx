@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import AppLayout from '../../components/AppLayout';
 import GroupService from '../../services/group.service';
-import AuthService from '../../services/auth.service';
 import { Table, Tag } from 'antd';
+import AuthContext from '../../contexts/auth.context';
 
 const columns = [
     {
@@ -47,11 +47,11 @@ const getUserRole = (roles) => {
 const MyGroup = () => {
 
     const [members, setMembers] = useState([]);
+    const { userInfo } = useContext(AuthContext);
 
     useEffect(() => {
         const getMembers = async () => {
-            const user = AuthService.getCurrentUser();
-            const { data: { group } } = await GroupService.getGroup(user?.group?._id);
+            const { data: { group } } = await GroupService.getGroup(userInfo?.group?._id);
             const members = group.members.map(member => {
                 const roles = member.roles.map(role => `ROLE_${ role.name.toUpperCase() }`);
                 return {
@@ -63,9 +63,15 @@ const MyGroup = () => {
             setMembers(members);
         };
         getMembers();
+        // eslint-disable-next-line
     }, []);
     return <AppLayout>
-        <Table columns={ columns } dataSource={ members }/>
+        <Table
+            columns={ columns }
+            dataSource={ members }
+            scroll={ { x: true } }
+            rowKey={ (record) => record.email }
+        />
     </AppLayout>;
 };
 

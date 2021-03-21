@@ -1,8 +1,8 @@
-export default function authHeader() {
-    const user = JSON.parse(localStorage.getItem('user'));
+export default function getAuthHeader() {
+    const accessToken = localStorage.getItem('accessToken');
 
-    if (user && user.accessToken) {
-        return { 'x-access-token': user.accessToken };
+    if (accessToken) {
+        return { 'x-access-token': accessToken };
     } else {
         return {};
     }

@@ -7,22 +7,8 @@ class AuthService {
         return await axios.post(API_URL + 'signin', { email, password });
     }
 
-    logout() {
-        window.location.href = '/';
-        localStorage.removeItem('user');
-    }
-
     async register(registerInfo) {
         return await axios.post(API_URL + 'signup', registerInfo);
-    }
-
-    getCurrentUser() {
-        const userInfo = localStorage.getItem('user');
-        try {
-            return JSON.parse(userInfo);
-        } catch(e) {
-            this.logout();
-        }
     }
 }
 

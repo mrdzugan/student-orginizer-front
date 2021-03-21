@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styles from './styles.module.css';
 import { Card, Form, Input, Checkbox, Button, Select, notification } from 'antd';
 import authService from '../../services/auth.service';
 import facultyService from '../../services/faculty.service';
 import { useHistory, Link } from 'react-router-dom';
+import AuthContext from '../../contexts/auth.context';
 
 const { Option } = Select;
 const { useForm } = Form;
@@ -15,6 +16,8 @@ const RegisterPage = () => {
     const [facultyList, setFacultyList] = useState([]);
     const [formValues, setFormValues] = useState({});
     const [form] = useForm();
+
+    const { setUserInfo } = useContext(AuthContext);
 
     useEffect(() => {
         const getFaculties = async () => {
@@ -28,17 +31,17 @@ const RegisterPage = () => {
         setFormValues(prevValues => {
             if (values.faculty && prevValues.faculty !== values.faculty) {
                 delete values.group;
-                form.setFieldsValue({group: undefined});
+                form.setFieldsValue({ group: undefined });
             }
             return ({ ...prevValues, ...values });
         });
-    }
+    };
 
     const onFinish = (values) => {
         if (values.isHeadman) {
             values.roles = ['headman'];
         }
-        if(values.group === 'noGroup') {
+        if (values.group === 'noGroup') {
             delete values.group;
         }
         authService.register(values).then((response) => {
@@ -47,7 +50,9 @@ const RegisterPage = () => {
                     ...response.data.user,
                     faculty: facultyList.find(faculty => faculty._id === values.faculty),
                 };
-                localStorage.setItem('user', JSON.stringify(userInfo));
+                setUserInfo(userInfo);
+                localStorage.setItem('accessToken', response.data.user.accessToken);
+                localStorage.setItem('userId', response.data.user.id);
                 history.push('/');
                 const { name, surname } = response.data.user;
                 notification.success({

@@ -1,27 +1,28 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import GroupService from '../../services/group.service';
 import UserService from '../../services/user.service';
-import AuthService from '../../services/auth.service';
 import { Modal, Form, Input, Select, notification } from 'antd';
-import authService from '../../services/auth.service';
-import * as _ from 'lodash';
+import AuthContext from '../../contexts/auth.context';
 
 const CreateGroupModal = ({ visible, onFinish }) => {
+
     const [form] = Form.useForm();
-    const userInfo = AuthService.getCurrentUser();
+    const { userInfo, setUserInfo } = useContext(AuthContext);
+
     const userFaculty = userInfo.faculty;
     const userId = userInfo.id;
     const onCreate = async (values) => {
         values.userId = userId;
-        values.faculty = userInfo.facultyId;
+        values.faculty = userFaculty._id;
         try {
             try {
                 const result = await GroupService.createGroup(values);
                 if (result) {
                     const response = await UserService.getUser(userId);
-                    const currentUserInfo = authService.getCurrentUser();
+                    setUserInfo(response.data.user);
+                    /*const currentUserInfo = authService.getCurrentUser();
                     const newUserInfo = _.omit({ ...currentUserInfo, ...response.data.user }, ['password', '_v']);
-                    localStorage.setItem('user', JSON.stringify(newUserInfo));
+                    localStorage.setItem('user', JSON.stringify(newUserInfo));*/
                 }
             } catch (error) {
                 const { message } = error.response?.data || {};

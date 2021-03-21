@@ -1,23 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styles from './styles.module.css';
 import { Card, Form, Input, Checkbox, Button, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import authService from '../../services/auth.service';
 import { useHistory, Link } from 'react-router-dom';
-import * as _ from 'lodash';
+import AuthContext from '../../contexts/auth.context';
+
 
 const LoginPage = () => {
 
     const history = useHistory();
+
+    const { setUserInfo } = useContext(AuthContext);
 
     const [loginError, setLoginError] = useState('');
 
     const onFinish = (values) => {
         authService.login(values.email, values.password).then(async response => {
             if (response.data.user.accessToken) {
-                const currentUserInfo = authService.getCurrentUser();
-                const newUserInfo = _.omit({ ...currentUserInfo, ...response.data.user }, ['password', '_v']);
-                localStorage.setItem('user', JSON.stringify(newUserInfo));
+                setUserInfo(response.data.user);
+                localStorage.setItem('accessToken', response.data.user.accessToken);
+                localStorage.setItem('userId', response.data.user.id);
                 history.push('/');
                 const { name, surname } = response.data.user;
                 notification.success({
