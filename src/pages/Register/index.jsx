@@ -20,7 +20,6 @@ const RegisterPage = () => {
         const getFaculties = async () => {
             const response = await facultyService.getFaculties();
             setFacultyList(response.data);
-            console.log(response.data);
         };
         getFaculties();
     }, []);
@@ -30,7 +29,6 @@ const RegisterPage = () => {
             if (values.faculty && prevValues.faculty !== values.faculty) {
                 delete values.group;
                 form.setFieldsValue({group: undefined});
-                console.log(form.getFieldsValue());
             }
             return ({ ...prevValues, ...values });
         });
@@ -40,11 +38,13 @@ const RegisterPage = () => {
         if (values.isHeadman) {
             values.roles = ['headman'];
         }
+        if(values.group === 'noGroup') {
+            delete values.group;
+        }
         authService.register(values).then((response) => {
             if (response.data.user.accessToken) {
                 const userInfo = {
                     ...response.data.user,
-                    facultyId: response.data.user.faculty,
                     faculty: facultyList.find(faculty => faculty._id === values.faculty),
                 };
                 localStorage.setItem('user', JSON.stringify(userInfo));
@@ -127,7 +127,6 @@ const RegisterPage = () => {
                         <Option value="noGroup">У списку немає моєї групи</Option>
                         { formValues.faculty &&
                         facultyList.find(faculty => {
-                            console.log(formValues);
                             return faculty._id === formValues.faculty;
                         }).groups.map(group => <Option key={ group.name }
                                                        value={ group.name }>{ group.name }</Option>) }

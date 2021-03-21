@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from '../../images/logo.svg';
 import styles from './styles.module.css';
 import { Button, Layout } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import authService from '../../../services/auth.service';
+import CreateGroupModal from '../../CreateGroupModal';
+import AuthService from '../../../services/auth.service';
 
 const getUserRole = (roles) => {
     if (roles.includes('ROLE_CURATOR')) {
@@ -21,7 +23,8 @@ const getUserRole = (roles) => {
 const Header = (props) => {
     const { isCollapsed } = props;
 
-    const userInfo = JSON.parse(localStorage.getItem('user'));
+    const [isCreateGroupModalVisible, setIsCreateGroupModalVisible] = useState(false);
+    const userInfo = AuthService.getCurrentUser();
 
     const renderCreateGroupButton = () =>
         <Button
@@ -29,9 +32,11 @@ const Header = (props) => {
             shape="round"
             type="primary"
             className={ styles.createGroupButton }
+            onClick={ () => setIsCreateGroupModalVisible(true) }
         >Створити групу</Button>;
-    const groupInfo = userInfo.group !== 'noGroup'
-        ? `${ userInfo.faculty?.abbreviation }-${ userInfo.group } ${ getUserRole(userInfo.roles) }`
+
+    const groupInfo = userInfo.group
+        ? `${ userInfo.faculty?.abbreviation }-${ userInfo.group.name } ${ getUserRole(userInfo.roles) }`
         : renderCreateGroupButton();
 
     return <Layout.Header
@@ -53,7 +58,10 @@ const Header = (props) => {
             </div>
             <Button size='small' ghost onClick={ () => authService.logout() }>Logout</Button>
         </div>
-
+        <CreateGroupModal
+            visible={ isCreateGroupModalVisible }
+            onFinish={ () => setIsCreateGroupModalVisible(false) }
+        />
     </Layout.Header>;
 };
 

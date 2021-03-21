@@ -8,7 +8,7 @@ class UserService {
         return axios.get(`${API_URL}/${id}`, { headers: authHeader() });
     }
 
-    getPublicContent() {
+    /*getPublicContent() {
         return axios.get(API_URL + 'all');
     }
 
@@ -22,7 +22,7 @@ class UserService {
 
     getAdminBoard() {
         return axios.get(API_URL + 'admin', { headers: authHeader() });
-    }
+    }*/
 }
 
 export default new UserService();

@@ -4,7 +4,7 @@ import { Card, Form, Input, Checkbox, Button, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import authService from '../../services/auth.service';
 import { useHistory, Link } from 'react-router-dom';
-import facultyService from "../../services/faculty.service";
+import * as _ from 'lodash';
 
 const LoginPage = () => {
 
@@ -15,14 +15,9 @@ const LoginPage = () => {
     const onFinish = (values) => {
         authService.login(values.email, values.password).then(async response => {
             if (response.data.user.accessToken) {
-                const userInfo = {
-                    ...response.data.user,
-                    facultyId: response.data.user.faculty,
-                }
-                localStorage.setItem('user', JSON.stringify(userInfo));
-                const { data: userFaculty } = await facultyService.getFaculty(userInfo.facultyId);
-                userInfo.faculty = userFaculty;
-                localStorage.setItem('user', JSON.stringify(userInfo));
+                const currentUserInfo = authService.getCurrentUser();
+                const newUserInfo = _.omit({ ...currentUserInfo, ...response.data.user }, ['password', '_v']);
+                localStorage.setItem('user', JSON.stringify(newUserInfo));
                 history.push('/');
                 const { name, surname } = response.data.user;
                 notification.success({
