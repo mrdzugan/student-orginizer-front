@@ -10,8 +10,14 @@ const UserProvider = (props) => {
         const getUser = async () => {
             const userId = localStorage.getItem('userId');
             if (userId) {
-                const { data: { user } } = await UserService.getUser(userId);
-                assignUserInfo(user);
+                try {
+                    const { data: { user } } = await UserService.getUser(userId);
+                    assignUserInfo(user);
+                } catch(e) {
+                    if(e?.response?.status === 401) {
+                        logout();
+                    }
+                }
             }
         };
         getUser();
