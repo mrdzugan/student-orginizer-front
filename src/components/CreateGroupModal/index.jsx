@@ -20,9 +20,6 @@ const CreateGroupModal = ({ visible, onFinish }) => {
                 if (result) {
                     const response = await UserService.getUser(userId);
                     setUserInfo(response.data.user);
-                    /*const currentUserInfo = authService.getCurrentUser();
-                    const newUserInfo = _.omit({ ...currentUserInfo, ...response.data.user }, ['password', '_v']);
-                    localStorage.setItem('user', JSON.stringify(newUserInfo));*/
                 }
             } catch (error) {
                 const { message } = error.response?.data || {};
