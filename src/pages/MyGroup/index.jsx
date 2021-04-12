@@ -62,7 +62,9 @@ const MyGroup = () => {
             });
             setMembers(members);
         };
-        getMembers();
+        if (userInfo?.group?._id) {
+            getMembers();
+        }
         // eslint-disable-next-line
     }, []);
     return <AppLayout>
