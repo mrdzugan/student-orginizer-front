@@ -11,17 +11,23 @@ const { TabPane } = Tabs;
 const TimeTable = () => {
 
     const [timetable, setTimetable] = useState(null);
+    const [reloadTrigger, reload] = useState(false);
     const { userInfo } = useContext(AuthContext);
 
     const fetchTimetable = async () => {
-        const { data: { timetable: fetchedTimetable } } = await TimetableService.getTimetable(userInfo?.group?._id);
-        setTimetable(fetchedTimetable || null);
+        try {
+            const { data: { timetable: fetchedTimetable } } = await TimetableService.getTimetable(userInfo?.group?._id);
+            console.log(fetchedTimetable);
+            setTimetable(fetchedTimetable || null);
+        } catch(e) {
+            console.dir(e);
+        }
     };
 
     useEffect(() => {
         fetchTimetable();
         //eslint-disable-next-line
-    }, []);
+    }, [reloadTrigger]);
 
     const [typeOfWeek, setTypeOfWeek] = useState('numerator');
 
@@ -33,10 +39,20 @@ const TimeTable = () => {
                 animated={ { inkBar: true, tabPane: true } }
             >
                 <TabPane tab="Чисельник" key="numerator">
-                    <Schedule timetable={ timetable.schedule.numerator }/>
+                    <Schedule
+                        reload={ () => reload(v => !v)}
+                        weekType="numerator"
+                        timetableId={ timetable._id }
+                        timetable={ timetable.schedule.numerator }
+                    />
                 </TabPane>
                 <TabPane tab="Знаменник" key="denominator">
-                    <Schedule timetable={ timetable.schedule.denominator }/>
+                    <Schedule
+                        reload={() => reload(v => !v)}
+                        weekType="denominator"
+                        timetableId={ timetable._id }
+                        timetable={ timetable.schedule.denominator }
+                    />
                 </TabPane>
             </Tabs>
             : <NoSchedule fetchTimetable={ fetchTimetable }/> }

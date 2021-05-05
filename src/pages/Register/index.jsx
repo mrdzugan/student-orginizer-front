@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styles from './styles.module.css';
-import { Card, Form, Input, Checkbox, Button, Select, notification } from 'antd';
+import { Card, Form, Input, Button, Select, notification } from 'antd';
 import authService from '../../services/auth.service';
 import facultyService from '../../services/faculty.service';
 import { useHistory, Link } from 'react-router-dom';
@@ -187,11 +187,6 @@ const RegisterPage = () => {
                     <Input.Password placeholder="Підтвердження паролю"/>
                 </Form.Item>
 
-                <Form.Item>
-                    <Form.Item name="isHeadman" valuePropName="checked" noStyle>
-                        <Checkbox>Я староста</Checkbox>
-                    </Form.Item>
-                </Form.Item>
                 { registerError && <p className={ styles.registerErrorMessage }>{ registerError }</p> }
 
                 <Form.Item>

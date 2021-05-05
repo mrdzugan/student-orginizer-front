@@ -1,71 +1,54 @@
-import React, { useState } from 'react';
-import { Form, Modal, Input, Button, Space, Typography, Tag } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import React, { useEffect } from 'react';
 import namesOfWeekDays from '../../helpers/namesOfWeekDays';
 import namesOfWeekTypes from '../../helpers/namesOfWeekTypes';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Modal, notification, Space, Tag, Typography } from 'antd';
 import TimetableService from '../../services/timetable.service';
-
-const defaultScheduleValues = {
-    numerator: [],
-    denominator: []
-};
-
-const scheduleValues = defaultScheduleValues;
 
 const { Text } = Typography;
 
-const CreateSchedule = ({ isOpened, closeModal, fetchTimetable }) => {
-
-    const [dayOfWeek, setDayOfWeek] = useState(0);
-    const [typeOfWeek, setTypeOfWeek] = useState('numerator');
-
+const EditSchedule = ({ editSchedule, timetableId, onCancel, reload }) => {
+    const { dayOfWeek, weekType } = editSchedule || {};
     const [form] = Form.useForm();
 
-    const changeScheduleValues = (type, values) => {
-        const { schedule = [] } = values;
-        const parsedSchedule = schedule.map(lesson => lesson || { subject: '', teacher: '' });
-        const scheduleWithDay = {
-            dayOfWeek,
-            lessons: parsedSchedule
-        };
-        scheduleValues[type] = [...scheduleValues[type], scheduleWithDay];
-    };
-
-    const onCancel = () => {
-        setDayOfWeek(0);
-        closeModal();
-    };
+    useEffect(() => {
+        console.log(editSchedule?.lessons);
+        form.setFieldsValue({ schedule: editSchedule?.lessons });
+        // eslint-disable-next-line
+    }, [editSchedule?.lessons]);
 
     const onFinish = async () => {
-        await TimetableService.createTimetable({ schedule: scheduleValues });
-        closeModal();
-        fetchTimetable();
-    };
-
-    const onOk = () => {
-        const values = form.getFieldsValue();
-        changeScheduleValues(typeOfWeek, values);
-        form.resetFields();
-        if (dayOfWeek === 6) {
-            if (typeOfWeek === 'numerator') {
-                setDayOfWeek(0);
-                setTypeOfWeek('denominator');
-                return;
-            }
-            return onFinish();
+        const formValues = form.getFieldsValue();
+        const parsedSchedule = formValues.schedule.map(lesson => ({
+            subject: lesson?.subject || '',
+            teacher: lesson?.teacher || '',
+        }));
+        const response = await TimetableService.updateTimetable(timetableId, {
+            ...editSchedule,
+            lessons: [...parsedSchedule]
+        });
+        if (response.status === 200) {
+            reload();
+            notification.success({
+                message: `Оновлення розкладу`,
+                description: `Розклад було успішно оновлено!`,
+            });
+            return onCancel();
         }
-        setDayOfWeek((prevValue) => prevValue + 1);
+        return notification.error({
+            message: 'Виникла помилка'
+        });
     };
 
     return (
         <Modal
-            onOk={ onOk }
-            okText={dayOfWeek === 6 && typeOfWeek === 'denominator' ? 'Завершити' : 'Наступний день'}
-            visible={ isOpened }
+            onOk={ onFinish }
+            okText={ 'Зберегти' }
+            visible={ !!editSchedule }
             onCancel={ onCancel }
             maskClosable={ false }
             cancelText="Відмінити"
-            title={ `(${ namesOfWeekTypes[typeOfWeek] }) ${ namesOfWeekDays[dayOfWeek] }` }
+            title={ `(${ namesOfWeekTypes[weekType] }) ${ namesOfWeekDays[dayOfWeek] }` }
         >
             <p style={ { marginBottom: 24 } }>
                 <Text type="secondary">- Якщо пара випадає на вікно, залишайте обидва поля у рядку порожніми</Text>
@@ -108,4 +91,4 @@ const CreateSchedule = ({ isOpened, closeModal, fetchTimetable }) => {
     );
 };
 
-export default CreateSchedule;
+export default EditSchedule;

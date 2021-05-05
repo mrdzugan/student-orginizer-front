@@ -11,6 +11,10 @@ class TimetableService {
     getTimetable(groupId) {
         return axios.get(`${ API_URL }/${ groupId }`, { headers: getAuthHeader() });
     }
+
+    updateTimetable(timetableId, scheduleInfo) {
+        return axios.put(`${ API_URL }/${ timetableId }`, scheduleInfo, { headers: getAuthHeader() });
+    }
 }
 
 export default new TimetableService();
