@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Empty, Comment, Avatar, Tooltip, Modal, Form, Input } from 'antd';
+import { Button, Empty, Comment, Avatar, Tooltip } from 'antd';
 import AppLayout from '../../components/AppLayout';
 import AdvertisementService from '../../services/advertisement.service';
 import { format, formatDistanceToNow } from 'date-fns';
+import CreateAdvertisement from './CreateAdvertisement';
+import EditAdvertisement from './EditAdvertisement';
 
 const Advertisements = () => {
-    const [form] = Form.useForm();
     const [advertisements, setAdvertisements] = useState([]);
     const [openedModal, setOpenedModal] = useState('');
     const [_, setRefresh] = useState(false);
@@ -26,8 +27,7 @@ const Advertisements = () => {
     };
 
     const openEditModalHandle = (advertisement) => {
-        form.setFieldsValue(advertisement);
-        setOpenedModal(advertisement._id);
+        setOpenedModal(advertisement);
     };
 
     useEffect(() => {
@@ -66,56 +66,18 @@ const Advertisements = () => {
                     </Tooltip>
                 }
             />) }
-        <Modal
-            visible={ !!openedModal }
-            title="Створити нове оголошення"
-            okText="Зберегти"
-            cancelText="Відміна"
-            onCancel={ () => setOpenedModal('') }
-            onOk={ () => {
-                form
-                    .validateFields()
-                    .then((values) => {
-                        form.resetFields();
-                        if (openedModal === 'create') {
-                            AdvertisementService.createAdvertisement(values).then(refresh);
-                        } else {
-                            AdvertisementService.updateAdvertisement(openedModal, values).then(refresh);
-                        }
-                        setOpenedModal('');
-                    })
-                    .catch((info) => {
-                        console.log('Validate Failed:', info);
-                    });
-            } }
-                >
-                <Form
-                form={ form }
-                layout="vertical"
-                name="form_in_modal"
-                initialValues={ {
-                title: '',
-                description: ''
-            } }
-                >
-                <Form.Item
-                name="title"
-                label="Заголовок"
-                rules={ [
-            {
-                required: true,
-                message: 'Введіть будь ласка заголовок Вашого оголошення',
-            },
-                ] }
-                >
-                <Input/>
-                </Form.Item>
-                <Form.Item name="description" label="Повідомлення">
-                <Input.TextArea rows={ 4 }/>
-                </Form.Item>
-                </Form>
-                </Modal>
-                </AppLayout>;
-            };
+        <CreateAdvertisement
+            refresh={ refresh }
+            isModalOpened={ openedModal === 'create' }
+            closeModal={ () => setOpenedModal('') }
+        />
+        <EditAdvertisement
+            refresh={ refresh }
+            advertisement={ openedModal }
+            isModalOpened={ typeof openedModal === 'object' }
+            closeModal={ () => setOpenedModal('') }
+        />
+    </AppLayout>;
+};
 
 export default Advertisements;
