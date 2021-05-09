@@ -58,7 +58,7 @@ const Header = (props) => {
                     <div>{ groupInfo }</div>
                 </> : <Spin indicator={ <LoadingOutlined style={ { fontSize: 28 } } spin/> }/> }
             </div>
-            <Button size='small' ghost onClick={ logout }>Logout</Button>
+            <Button size='small' ghost onClick={ logout }>Вийти</Button>
         </div>
         <CreateGroupModal
             visible={ isCreateGroupModalVisible }
