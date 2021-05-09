@@ -22,13 +22,26 @@ const columns = [
         key: 'role',
         render: role => (
             <>
-                <Tag color="green" key={ role }>
+                <Tag color={getRoleColor(role)} key={ role }>
                     { role.toUpperCase() }
                 </Tag>
             </>
         ),
     },
 ];
+
+const getRoleColor = (role) => {
+    if (role === 'Куратор') {
+        return 'red';
+    }
+    else if (role === 'Староста') {
+        return 'yellow';
+    }
+    else if (role === 'Студент(ка)') {
+        return 'green';
+    }
+    return 'green';
+}
 
 const getUserRole = (roles) => {
     console.log(roles);
