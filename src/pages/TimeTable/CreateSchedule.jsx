@@ -68,7 +68,7 @@ const CreateSchedule = ({ isOpened, closeModal, fetchTimetable }) => {
             title={ `(${ namesOfWeekTypes[typeOfWeek] }) ${ namesOfWeekDays[dayOfWeek] }` }
         >
             <p style={ { marginBottom: 24 } }>
-                <Text type="secondary">- Якщо пара випадає на вікно, залишайте обидва поля у рядку порожніми</Text>
+                <Text type="secondary">- Якщо пара випадає на вікно, залишайте обидва поля у рядку порожніми</Text> <br/>
                 <Text type="secondary">- Якщо у цей день немає пар, пропустіть натиснувши "Наступний день"</Text>
             </p>
             <Form name="dynamic_form_nest_item" form={ form } autoComplete="off">
